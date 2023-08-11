@@ -1,0 +1,10 @@
+gcc Tuketici.c -o tuketici -lpthread
+Tuketici.c: In function ‘thread_fonksiyonu’:
+Tuketici.c:12:48: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   12 |     printf("Tüketici thread %d: %d okundu.\n", (int)arg, okunan_deger);
+      |                                                ^
+Tuketici.c: In function ‘main’:
+Tuketici.c:40:70: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+   40 |         pthread_create(&threads[i], NULL, thread_fonksiyonu, (void*)i);
+      |                                                              ^
+
