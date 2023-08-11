@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-int sayac = 0;
+int sayac = 1;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 int fd[2];  // pipe için
 
@@ -11,9 +11,10 @@ void *thread_fonksiyonu(void *arg) {
     int id = *((int *)arg);
 
     pthread_mutex_lock(&mutex);
-    sayac = id + 1;
+    
     write(fd[1], &sayac, sizeof(sayac));
     printf("Üretici thread %d: %d yazıldı.\n", id, sayac);
+    sayac++;
     pthread_mutex_unlock(&mutex);
     sleep(1);
     return NULL;
@@ -41,14 +42,13 @@ int main() {
     } else if (pid > 0) {  // Ana süreç
         close(fd[0]);
         while (1) {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 1; i <= 10; i++) {
                 thread_ids[i] = i;
                 pthread_create(&threads[i], NULL, thread_fonksiyonu, &thread_ids[i]);
-            }
-
-            for (int i = 0; i < 10; i++) {
                 pthread_join(threads[i], NULL);
             }
+
+          
         }
     } else {
         perror("fork");

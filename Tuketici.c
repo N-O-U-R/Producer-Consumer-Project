@@ -30,7 +30,7 @@ int main() {
         close(fd[0]);
         int gonderilen_deger;
         while (1) {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 1; i <= 10; i++) {
                 read(STDIN_FILENO, &gonderilen_deger, sizeof(gonderilen_deger));
                 write(fd[1], &gonderilen_deger, sizeof(gonderilen_deger));
             }
@@ -38,14 +38,12 @@ int main() {
     } else if (pid > 0) {  // Ana süreç
         close(fd[1]);
         while (1) {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 1; i <= 10; i++) {
                 thread_ids[i] = i;
                 pthread_create(&threads[i], NULL, thread_fonksiyonu, &thread_ids[i]);
-            }
-
-            for (int i = 0; i < 10; i++) {
                 pthread_join(threads[i], NULL);
             }
+        
         }
     } else {
         perror("fork");
