@@ -7,9 +7,10 @@ int fd[2];  // pipe için
 
 void *thread_fonksiyonu(void *arg) {
     int okunan_deger;
+    int id = *((int *)arg);
 
     read(fd[0], &okunan_deger, sizeof(okunan_deger));
-    printf("Tüketici thread %d: %d okundu.\n", (int)arg, okunan_deger);
+    printf("Tüketici thread %d: %d okundu.\n", id, okunan_deger);
 
     sleep(1);
     return NULL;
@@ -17,6 +18,7 @@ void *thread_fonksiyonu(void *arg) {
 
 int main() {
     pthread_t threads[10];
+    int thread_ids[10];
 
     if (pipe(fd) == -1) {
         perror("pipe");
@@ -37,7 +39,8 @@ int main() {
         close(fd[1]);
         while (1) {
             for (int i = 0; i < 10; i++) {
-                pthread_create(&threads[i], NULL, thread_fonksiyonu, (void*)i);
+                thread_ids[i] = i;
+                pthread_create(&threads[i], NULL, thread_fonksiyonu, &thread_ids[i]);
             }
 
             for (int i = 0; i < 10; i++) {
