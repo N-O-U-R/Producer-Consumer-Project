@@ -11,10 +11,11 @@ void *thread_fonksiyonu(void *arg) {
     int id = *((int *)arg);
 
     pthread_mutex_lock(&mutex);
-    
-    write(fd[1], &sayac, sizeof(sayac));
-    printf("Üretici thread %d: %d yazıldı.\n", id, sayac);
-    sayac++;
+    if (sayac <= 10) {
+        write(fd[1], &sayac, sizeof(sayac));
+        printf("Üretici thread %d: %d yazıldı.\n", id, sayac);
+        sayac++;
+    }
     pthread_mutex_unlock(&mutex);
     sleep(1);
     return NULL;
@@ -42,13 +43,13 @@ int main() {
     } else if (pid > 0) {  // Ana süreç
         close(fd[0]);
         while (1) {
-            for (int i = 1; i <= 10; i++) {
-                thread_ids[i] = i;
-                pthread_create(&threads[i], NULL, thread_fonksiyonu, &thread_ids[i]);
-                pthread_join(threads[i], NULL);
+            while(sayac <= 10) {
+                for (int i = 0; i < 10; i++) {
+                    thread_ids[i] = i + 1;
+                    pthread_create(&threads[i], NULL, thread_fonksiyonu, &thread_ids[i]);
+                    pthread_join(threads[i], NULL);
+                }
             }
-
-          
         }
     } else {
         perror("fork");
