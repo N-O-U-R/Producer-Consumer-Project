@@ -1,10 +1,12 @@
 gcc Tuketici.c -o tuketici -lpthread
-Tuketici.c: In function ‘thread_fonksiyonu’:
-Tuketici.c:12:48: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
-   12 |     printf("Tüketici thread %d: %d okundu.\n", (int)arg, okunan_deger);
-      |                                                ^
-Tuketici.c: In function ‘main’:
-Tuketici.c:40:70: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
-   40 |         pthread_create(&threads[i], NULL, thread_fonksiyonu, (void*)i);
-      |                                                              ^
-
+/usr/bin/ld: /tmp/cc0iFOaK.o: warning: relocation against `sayac' in read-only section `.text'
+/usr/bin/ld: /tmp/cc0iFOaK.o: in function `thread_fonksiyonu':
+Tuketici.c:(.text+0x2a): undefined reference to `sayac'
+/usr/bin/ld: Tuketici.c:(.text+0x69): undefined reference to `sayac'
+/usr/bin/ld: Tuketici.c:(.text+0x72): undefined reference to `sayac'
+/usr/bin/ld: /tmp/cc0iFOaK.o: in function `main':
+Tuketici.c:(.text+0x109): undefined reference to `sayac'
+/usr/bin/ld: Tuketici.c:(.text+0x165): undefined reference to `sayac'
+/usr/bin/ld: /tmp/cc0iFOaK.o:Tuketici.c:(.text+0x222): more undefined references to `sayac' follow
+/usr/bin/ld: warning: creating DT_TEXTREL in a PIE
+collect2: error: ld returned 1 exit status
