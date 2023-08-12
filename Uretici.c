@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <semaphore.h>
 #include <fcntl.h>
+#include <signal.h>
+
 
 int sayac = 0;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -18,7 +20,22 @@ void *thread_fonksiyonu(void *arg) {
     return NULL;
 }
 
+
+sem_t *sem_for_tuketici;
+sem_t *sem_for_uretici;
+
+void handle_signal(int signal) {
+    sem_close(sem_for_tuketici);
+    sem_unlink("/sem_for_tuketici");
+    sem_close(sem_for_uretici);
+    sem_unlink("/sem_for_uretici");
+    exit(0);
+}
+
 int main() {
+
+    signal(SIGINT, handle_signal);
+
     pthread_t threads[10];
 
     if (pipe(fd) == -1) {

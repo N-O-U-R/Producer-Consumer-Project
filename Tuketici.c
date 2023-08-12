@@ -5,6 +5,8 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <semaphore.h>
+#include <signal.h>
+
 
 int fd[2];  // pipe for communication between parent and child
 
@@ -15,7 +17,23 @@ void *thread_fonksiyonu(void *arg) {
     return NULL;
 }
 
+
+sem_t *sem_for_tuketici;
+sem_t *sem_for_uretici;
+
+void handle_signal(int signal) {
+    sem_close(sem_for_tuketici);
+    sem_unlink("/sem_for_tuketici");
+    sem_close(sem_for_uretici);
+    sem_unlink("/sem_for_uretici");
+    exit(0);
+}
+
+
 int main() {
+
+    signal(SIGINT, handle_signal);
+
     pthread_t threads[10];
 
     if (pipe(fd) == -1) {
