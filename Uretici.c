@@ -20,18 +20,24 @@ void *thread_fonksiyonu(void *arg) {
 int main() {
     pthread_t threads[10];
 
-    sem_t *sem_uretici = sem_open("/sem_uretici", O_CREAT, 0644, 0);
+    sem_t *sem_for_tuketici = sem_open("/sem_for_tuketici", O_CREAT, 0644, 0);
+    sem_t *sem_for_uretici = sem_open("/sem_for_uretici", O_CREAT, 0644, 1);  // Producer starts first
 
     while (1) {
+        sem_wait(sem_for_uretici);  // Wait for the signal from Tuketici
         for (int i = 0; i < 10; i++) {
             pthread_create(&threads[i], NULL, thread_fonksiyonu, NULL);
             pthread_join(threads[i], NULL);
-            sem_post(sem_uretici);
         }
         sayac = 0;
+        sem_post(sem_for_tuketici);  // Signal to Tuketici to start consuming
     }
 
-    sem_close(sem_uretici);
-    sem_unlink("/sem_uretici");
+    sem_close(sem_for_tuketici);
+    sem_unlink("/sem_for_tuketici");
+
+    sem_close(sem_for_uretici);
+    sem_unlink("/sem_for_uretici");
+
     return 0;
 }
