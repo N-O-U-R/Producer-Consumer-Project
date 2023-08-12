@@ -18,6 +18,7 @@ void *thread_fonksiyonu(void *arg) {
     sleep(1);
     return NULL;
 }
+
 int main() {
     pthread_t threads[10];
 
@@ -26,24 +27,23 @@ int main() {
         exit(1);
     }
 
-    sem_t *sem = sem_open("/semaphore_example", O_CREAT, 0644, 0);  // Change semaphore name
+    sem_t *sem_uretici = sem_open("/sem_uretici", O_CREAT, 0644, 0);  // Uretici semaphore
+    sem_t *sem_tuketici = sem_open("/sem_tuketici", O_CREAT, 0644, 10);  // Tuketici semaphore
 
-    pid_t pid = fork();
-    if (pid == 0) {  // Yavru süreç
-        close(fd[1]);
-
-        while (1) {
-            for (int i = 0; i < 10; i++) {
-                pthread_create(&threads[i], NULL, thread_fonksiyonu, NULL);
-                pthread_join(threads[i], NULL);
-            }
-
-            sem_post(sem);  // Signal to Tuketici that production is done
-            sayac = 0;
-            sem_wait(sem);  // Wait for signal from Tuketici
+    while (1) {
+        for (int i = 0; i < 10; i++) {
+            pthread_create(&threads[i], NULL, thread_fonksiyonu, NULL);
+            pthread_join(threads[i], NULL);
+            sem_wait(sem_tuketici);  // Decrement the Tuketici semaphore
         }
-    }
-    sem_close(sem);
 
+        for (int i = 0; i < 10; i++) {
+            sem_post(sem_uretici);  // Signal to Tuketici that a number is ready
+        }
+        sayac = 0;
+    }
+
+    sem_close(sem_uretici);
+    sem_close(sem_tuketici);
     return 0;
 }

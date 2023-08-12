@@ -6,22 +6,21 @@
 #include <sys/stat.h>
 #include <semaphore.h>
 
-#define SEM_NAME "/semaphore_example"
-sem_t *sem;
-
 int fd[2];  // pipe için
 
 void *thread_fonksiyonu(void *arg) {
     int okunan_deger;
 
-    read(fd[0], &okunan_deger, sizeof(okunan_deger));
-    if(okunan_deger == 0) {
-        printf("No data read from pipe!\n");
-        return NULL;
-    }
+    sem_t *sem_uretici = sem_open("/sem_uretici", O_CREAT, 0644, 0);
+    sem_t *sem_tuketici = sem_open("/sem_tuketici", O_CREAT, 0644, 10);
+    sem_wait(sem_uretici);  // Wait for Uretici signal
 
-    printf("Tüketici thread %d: %d okundu.\n", *((int *)arg), okunan_deger);
-    sem_post(sem);
+    read(fd[0], &okunan_deger, sizeof(okunan_deger));
+    printf("Tüketici thread: %d okundu.\n", okunan_deger);
+    sem_post(sem_tuketici);  // Signal to Uretici that a number is consumed
+
+    sem_close(sem_uretici);
+    sem_close(sem_tuketici);
 
     sleep(1);
     return NULL;
@@ -29,13 +28,6 @@ void *thread_fonksiyonu(void *arg) {
 
 int main() {
     pthread_t threads[10];
-    int thread_ids[10];
-
-    sem = sem_open(SEM_NAME, O_CREAT, 0644, 0);
-    if(sem == SEM_FAILED) {
-        perror("sem_open");
-        exit(1);
-    }
 
     if(pipe(fd) == -1) {
         perror("pipe");
@@ -44,14 +36,9 @@ int main() {
 
     while(1) {
         for(int i = 0; i < 10; i++) {
-            thread_ids[i] = i + 1;
-            sem_wait(sem);
-            pthread_create(&threads[i], NULL, thread_fonksiyonu, &thread_ids[i]);
+            pthread_create(&threads[i], NULL, thread_fonksiyonu, NULL);
             pthread_join(threads[i], NULL);
         }
     }
-
-    sem_close(sem);
-    sem_unlink(SEM_NAME);
     return 0;
 }
