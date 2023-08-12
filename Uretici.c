@@ -18,7 +18,6 @@ void *thread_fonksiyonu(void *arg) {
     sleep(1);
     return NULL;
 }
-
 int main() {
     pthread_t threads[10];
 
@@ -27,7 +26,7 @@ int main() {
         exit(1);
     }
 
-    sem_t *sem = sem_open("/mysem", O_CREAT, 0644, 0);  // Create semaphore
+    sem_t *sem = sem_open("/semaphore_example", O_CREAT, 0644, 0);  // Change semaphore name
 
     pid_t pid = fork();
     if (pid == 0) {  // Yavru süreç
