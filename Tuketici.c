@@ -8,11 +8,11 @@
 #include <signal.h>
 
 
-int fd[2];  // pipe for communication between parent and child
+int fd[2];  
 
 void *thread_fonksiyonu(void *arg) {
     int okunan_deger = *((int*) arg);
-    write(fd[1], &okunan_deger, sizeof(okunan_deger));  // send data to parent process
+    write(fd[1], &okunan_deger, sizeof(okunan_deger));  
     sleep(1);
     return NULL;
 }
@@ -21,6 +21,7 @@ void *thread_fonksiyonu(void *arg) {
 sem_t *sem_for_tuketici;
 sem_t *sem_for_uretici;
 
+// this is to reset the semaphores 
 void handle_signal(int signal) {
     sem_close(sem_for_tuketici);
     sem_unlink("/sem_for_tuketici");
@@ -42,14 +43,14 @@ int main() {
     }
 
     pid_t pid = fork();
-    if (pid == 0) {  // child process
+    if (pid == 0) {  
         close(fd[1]);
         int okunan_deger;
         while (1) {
             read(fd[0], &okunan_deger, sizeof(okunan_deger));
             printf("Thread: %d okundu.\n", okunan_deger);
         }
-    } else if (pid > 0) {  // parent process
+    } else if (pid > 0) {  
         close(fd[0]);
 
         sem_t *sem_for_tuketici = sem_open("/sem_for_tuketici", O_CREAT, 0644, 0);
