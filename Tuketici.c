@@ -48,7 +48,7 @@ int main() {
         int okunan_deger;
         while (1) {
             read(fd[0], &okunan_deger, sizeof(okunan_deger));
-            printf("Thread: %d okundu.\n", okunan_deger);
+            printf("Thread %d: %d okudu.\n", okunan_deger, okunan_deger);
         }
     } else if (pid > 0) {  
         close(fd[0]);
