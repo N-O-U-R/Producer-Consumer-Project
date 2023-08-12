@@ -33,7 +33,7 @@ void handle_signal(int signal) {
 }
 
 int main() {
-    
+
     signal(SIGINT, handle_signal);
 
     pthread_t threads[10];
@@ -49,7 +49,7 @@ int main() {
         int okunan_deger;
         while (1) {
             read(fd[0], &okunan_deger, sizeof(okunan_deger));
-            printf("Üretici child thread: %d yazıldı.\n", okunan_deger);
+            printf("Thread: %d yazıldı.\n", okunan_deger);
         }
     } else if (pid > 0) {  // parent process
         close(fd[0]);
